@@ -106,7 +106,7 @@
     marketTotalPrice: document.getElementById('marketTotalPrice')
   };
 
-  const SEED_PAGE_SIZE = 5;
+  const SEED_PAGE_SIZE = 3;
   const MARKET_PAGE_SIZE = 2;
 
   let toastTimer = null;

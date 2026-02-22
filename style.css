@@ -469,7 +469,7 @@ button:active {
 }
 
 .overlay-panel.wide {
-  width: min(94vw, 820px);
+  width: min(94vw, 760px);
 }
 
 .overlay-panel.show {
@@ -477,7 +477,7 @@ button:active {
 }
 
 #shopPanel {
-  background: linear-gradient(rgba(255, 251, 236, 0.92), rgba(255, 251, 236, 0.92)), url('./assets/bg/shop_scene.png');
+  background: url('./assets/bg/shop_scene.png');
   background-size: cover;
   background-position: center;
 }
@@ -537,7 +537,7 @@ button:active {
 }
 
 .seed-detail {
-  background: rgba(255, 251, 236, 0.92);
+  background: rgba(255, 251, 236, 0.8);
   border: 2px solid var(--panel-bd);
   border-radius: 14px;
   padding: 12px;
@@ -585,7 +585,7 @@ button:active {
   min-height: 0;
   flex: 1;
   overflow: hidden;
-  background: rgba(255, 251, 236, 0.92);
+  background: rgba(255, 251, 236, 0.8);
   border: 2px solid var(--panel-bd);
   border-radius: 14px;
   padding: 8px;
@@ -596,7 +596,8 @@ button:active {
 
 .seed-list .list {
   flex: 1;
-  max-height: clamp(160px, 32vh, 260px);
+  overflow: hidden;
+  max-height: none;
 }
 
 .seed-select {
@@ -630,7 +631,7 @@ button:active {
 }
 
 .seed-preview {
-  background: rgba(255, 251, 236, 0.92);
+  background: rgba(255, 251, 236, 0.8);
   border: 2px solid var(--panel-bd);
   border-radius: 14px;
   padding: 12px;
@@ -662,7 +663,7 @@ button:active {
 }
 
 .market-card {
-  background: rgba(255, 251, 236, 0.92);
+  background: rgba(255, 251, 236, 0.8);
   border: 2px solid var(--panel-bd);
   border-radius: 16px;
   padding: 12px;
@@ -700,7 +701,7 @@ button:active {
   align-items: center;
   gap: 8px;
   font-weight: 800;
-  background: rgba(255, 251, 236, 0.92);
+  background: rgba(255, 251, 236, 0.8);
   border: 2px solid var(--panel-bd);
   border-radius: 12px;
   padding: 6px 10px;
