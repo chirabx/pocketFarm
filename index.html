@@ -25,8 +25,7 @@
       </div>
       <div class="stats">
         <div class="stat" title="月份">
-          <span class="stat-icon" aria-hidden="true">📅</span>
-          <span id="monthValue">1</span>
+          <span id="monthValue">第1月</span>
         </div>
         <div class="stat" title="金币">
           <span class="stat-icon" aria-hidden="true">🪙</span>
@@ -71,6 +70,12 @@
       <span class="sr-only">设置</span>
     </button>
 
+    <button id="musicToggle" class="corner-btn right-top music-toggle" title="音乐">
+      <span class="icon" aria-hidden="true">🔇</span>
+      <span class="btn-label" aria-hidden="true">静音</span>
+      <span class="sr-only">音乐开关</span>
+    </button>
+
     <div class="tool-stack">
       <button class="tool icon-btn" data-tool="plant" title="种植">
         <span class="icon" aria-hidden="true">🌱</span>
@@ -92,6 +97,9 @@
         <span class="btn-label" aria-hidden="true">除虫</span>
         <span class="sr-only">除虫</span>
       </button>
+    </div>
+
+    <div class="right-tools">
       <button class="tool icon-btn" data-tool="clear" title="铲除">
         <span class="icon" aria-hidden="true">🧹</span>
         <span class="btn-label" aria-hidden="true">铲除</span>
@@ -124,6 +132,7 @@
         <span class="icon" aria-hidden="true">✖️</span>
       </button>
     </div>
+    <div class="settings-title">新河小学五（6）班陈柯蒙</div>
     <div class="panel-actions">
       <button id="saveNow" class="icon-btn" title="手动存档">
         <span class="icon" aria-hidden="true">💾</span>
@@ -263,6 +272,7 @@
   </div>
 
   <div id="toast" class="toast"></div>
+  <audio id="bgm" src="./assets/music/Sunpetal_Serenade.mp3" loop preload="auto"></audio>
   <script src="./app.js"></script>
 </body>
 

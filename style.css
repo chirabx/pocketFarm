@@ -81,7 +81,7 @@ button:active {
   min-height: 0;
   position: absolute;
   left: 12px;
-  right: 130px;
+  right: 240px;
   top: 12px;
   z-index: 90;
   align-items: center;
@@ -106,9 +106,11 @@ button:active {
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(120px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(3, auto);
+  gap: 8px;
   align-items: center;
+  margin-left: auto;
+  margin-right: 0;
 }
 
 .stat {
@@ -116,15 +118,14 @@ button:active {
   background: rgba(255, 242, 210, 0.95);
   border: 1px solid #d8c89c;
   border-radius: 8px;
-  padding: 6px 8px;
+  padding: 4px 6px;
   text-align: center;
   white-space: nowrap;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transform: scale(1.2);
-  transform-origin: center;
+  font-size: 12px;
 }
 
 .stat-icon {
@@ -218,6 +219,7 @@ button:active {
   border-color: #c99936;
   height: 56px;
   padding: 8px 14px;
+  margin-left: 8px;
 }
 
 .board {
@@ -306,6 +308,7 @@ button:active {
   object-fit: contain;
   transform: translate(-50%, -50%) scale(1);
   pointer-events: none;
+  z-index: 1;
 }
 
 .plot .crop {
@@ -317,6 +320,7 @@ button:active {
   object-fit: contain;
   transform: translate(-50%, -50%);
   pointer-events: none;
+  z-index: 1;
 }
 
 .plot.locked .tile {
@@ -332,11 +336,12 @@ button:active {
   gap: 4px;
   align-items: center;
   pointer-events: none;
+  z-index: 3;
 }
 
 .plot .status-icon {
-  width: 24px;
-  height: 24px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
   animation: bob 1.6s ease-in-out infinite;
@@ -371,6 +376,7 @@ button:active {
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
   padding: 3px 6px;
+  z-index: 3;
 }
 
 .plot.ready .label {
@@ -392,6 +398,7 @@ button:active {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  z-index: 3;
 }
 
 .plot .lock-tag .icon {
@@ -454,6 +461,13 @@ button:active {
   flex-wrap: wrap;
 }
 
+.settings-title {
+  text-align: center;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--ink);
+}
+
 .overlay-panel {
   position: fixed;
   z-index: 120;
@@ -470,6 +484,11 @@ button:active {
   flex-direction: column;
   gap: 10px;
   box-shadow: 0 16px 32px rgba(50, 37, 18, 0.2);
+}
+
+#settingsPanel {
+  max-height: 95vh;
+  min-height: 200px;
 }
 
 .overlay-panel.wide {
@@ -856,6 +875,11 @@ button:active {
   top: 12px;
 }
 
+.corner-btn.right-top.music-toggle {
+  right: 120px;
+  top: 12px;
+}
+
 .tool-stack {
   position: absolute;
   right: 14px;
@@ -866,6 +890,28 @@ button:active {
 }
 
 .tool-stack .icon-btn {
+  width: 96px;
+  height: 96px;
+  border-radius: 24px;
+  background: rgba(255, 242, 210, 0.95);
+  border: 2px solid #d8c89c;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 8px 14px;
+}
+
+.right-tools {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 95;
+}
+
+.right-tools .icon-btn {
   width: 96px;
   height: 96px;
   border-radius: 24px;
@@ -990,7 +1036,7 @@ button:active {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s;
-  z-index: 10;
+  z-index: 200;
 }
 
 .toast.show {
@@ -1030,6 +1076,110 @@ button:active {
 
   .plot .crop {
     width: 63%;
+  }
+}
+
+@media (max-width: 900px), (max-height: 520px) {
+  :root {
+    --icon-size: 28px;
+  }
+
+  .topbar {
+    left: 8px;
+    right: 170px;
+    top: 8px;
+  }
+
+  .brand-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .stats {
+    gap: 8px;
+  }
+
+  .stat {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+
+  .corner-btn,
+  .tool-stack .icon-btn,
+  .right-tools .icon-btn {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    padding: 8px 6px 10px;
+    gap: 4px;
+  }
+
+  .corner-btn.left-mid {
+    left: 8px;
+  }
+
+  .corner-btn.left-bottom {
+    left: 8px;
+    bottom: 10px;
+  }
+
+  .corner-btn.right-top {
+    right: 8px;
+    top: 8px;
+  }
+
+  .corner-btn.right-top.music-toggle {
+    right: 90px;
+    top: 8px;
+  }
+
+  .tool-stack {
+    right: 8px;
+    bottom: 10px;
+    gap: 6px;
+  }
+
+  .right-tools {
+    right: 8px;
+    gap: 6px;
+  }
+
+  .btn-label {
+    font-size: 14px;
+  }
+
+  .end-month {
+    height: 44px;
+    padding: 6px 10px;
+  }
+
+  #shopPanel {
+    max-height: 92vh;
+    overflow: auto;
+  }
+
+  #shopPanel .shop-view.show {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .shop-split {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .seed-preview {
+    min-height: 140px;
+  }
+
+  .seed-list .list {
+    overflow: auto;
+  }
+
+  .market-grid {
+    grid-template-columns: 1fr;
   }
 }
 

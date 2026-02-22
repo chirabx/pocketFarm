@@ -95,6 +95,7 @@
     resetGame: document.getElementById('resetGame'),
     lockLandscape: document.getElementById('lockLandscape'),
     toast: document.getElementById('toast'),
+    bgm: document.getElementById('bgm'),
     appRoot: document.getElementById('appRoot'),
     shopToggle: document.getElementById('shopToggle'),
     bagToggle: document.getElementById('bagToggle'),
@@ -125,7 +126,8 @@
     unlockConfirmPanel: document.getElementById('unlockConfirmPanel'),
     unlockConfirmText: document.getElementById('unlockConfirmText'),
     unlockCancel: document.getElementById('unlockCancel'),
-    unlockConfirm: document.getElementById('unlockConfirm')
+    unlockConfirm: document.getElementById('unlockConfirm'),
+    musicToggle: document.getElementById('musicToggle')
   };
 
   const SEED_PAGE_SIZE = 3;
@@ -175,7 +177,7 @@
     return {
       version: 4,
       month: 1,
-      gold: 420,
+      gold: 50,
       bagCap: 150,
       selectedTool: 'harvest',
       selectedSeed: 'wheat',
@@ -215,6 +217,7 @@
 
   function bindEvents() {
     dom.farmGrid.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.08), rgba(255,255,255,0.08)), url('${ASSET.bg}')`;
+    initBgm();
 
     dom.appRoot.addEventListener('click', (event) => {
       const button = event.target.closest('button[data-tool]');
@@ -319,6 +322,16 @@
       ui.pendingUnlock = null;
     });
 
+    if (dom.musicToggle) {
+      dom.musicToggle.addEventListener('click', () => {
+        const isMuted = !dom.bgm || !dom.bgm.muted;
+        setMusicMuted(isMuted);
+        if (dom.bgm && !dom.bgm.muted) {
+          dom.bgm.play().catch(() => { });
+        }
+      });
+    }
+
     dom.buySeedConfirm.addEventListener('click', () => {
       const cropId = ui.selectedShopCrop;
       buySeed(cropId, getBuyQty(cropId));
@@ -339,6 +352,7 @@
       autoSave();
       showToast('存档已重置');
     });
+
 
     dom.lockLandscape.addEventListener('click', async () => {
       try {
@@ -389,6 +403,7 @@
       panel.classList.remove('show');
     }
   }
+
 
   function getUnlockCost(index) {
     const col = index % GRID_SIZE;
@@ -841,7 +856,7 @@
   }
 
   function renderTopStats() {
-    dom.monthValue.textContent = String(state.month);
+    dom.monthValue.textContent = `第${state.month}月`;
     dom.goldValue.textContent = String(state.gold);
     dom.bagCount.textContent = String(getBagUsed());
     dom.bagCap.textContent = String(state.bagCap);
@@ -1189,6 +1204,50 @@
     toastTimer = setTimeout(() => {
       dom.toast.classList.remove('show');
     }, 1800);
+  }
+
+  function initBgm() {
+    if (!dom.bgm) {
+      return;
+    }
+    dom.bgm.volume = 0.35;
+    setMusicMuted(true);
+    const tryPlay = () => {
+      if (!dom.bgm.muted) {
+        dom.bgm.play().catch(() => { });
+      }
+      document.removeEventListener('click', tryPlay);
+      document.removeEventListener('touchstart', tryPlay);
+    };
+    tryPlay();
+    document.addEventListener('click', tryPlay, { once: true });
+    document.addEventListener('touchstart', tryPlay, { once: true });
+  }
+
+  function setMusicMuted(muted) {
+    if (!dom.bgm || !dom.musicToggle) {
+      return;
+    }
+    dom.bgm.muted = muted;
+    const icon = dom.musicToggle.querySelector('.icon');
+    const label = dom.musicToggle.querySelector('.btn-label');
+    if (muted) {
+      if (icon) {
+        icon.textContent = '🔇';
+      }
+      if (label) {
+        label.textContent = '静音';
+      }
+      dom.musicToggle.title = '音乐：关闭';
+    } else {
+      if (icon) {
+        icon.textContent = '🔊';
+      }
+      if (label) {
+        label.textContent = '音乐';
+      }
+      dom.musicToggle.title = '音乐：开启';
+    }
   }
 
   function normalizeTasks(tasks) {
