@@ -84,6 +84,7 @@ button:active {
   right: 130px;
   top: 12px;
   z-index: 90;
+  align-items: center;
 }
 
 .title-group {
@@ -105,8 +106,8 @@ button:active {
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(140px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(3, minmax(120px, 1fr));
+  gap: 12px;
   align-items: center;
 }
 
@@ -122,7 +123,7 @@ button:active {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transform: scale(1.5);
+  transform: scale(1.2);
   transform-origin: center;
 }
 
@@ -215,6 +216,8 @@ button:active {
 .end-month {
   background: #ffdb90;
   border-color: #c99936;
+  height: 56px;
+  padding: 8px 14px;
 }
 
 .board {
@@ -448,6 +451,7 @@ button:active {
   display: flex;
   gap: 10px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .overlay-panel {
@@ -457,7 +461,7 @@ button:active {
   top: 50%;
   transform: translate(-50%, -50%);
   width: min(92vw, 520px);
-  max-height: 72vh;
+  max-height: 90vh;
   background: var(--panel-bg);
   border: 2px solid var(--panel-bd);
   border-radius: 16px;
@@ -525,7 +529,7 @@ button:active {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
   gap: 14px;
-  min-height: 0;
+  min-height: 72vh;
 }
 
 .shop-left,
@@ -602,7 +606,7 @@ button:active {
 
 .seed-select {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 8px;
   padding: 8px;
@@ -610,6 +614,15 @@ button:active {
   border: 1px solid #ceb67b;
   background: #fffaf0;
   cursor: pointer;
+}
+
+.shop-item-img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: rgba(255, 242, 210, 0.95);
+  border: 1px solid #d8c89c;
 }
 
 .seed-select.active {
@@ -628,6 +641,75 @@ button:active {
   font-size: 14px;
   padding: 6px 4px;
   color: var(--ink);
+}
+
+#bagList {
+  background: rgba(255, 251, 236, 0.9);
+  border: 2px solid var(--panel-bd);
+  border-radius: 14px;
+  padding: 10px;
+  overflow: auto;
+}
+
+.bag-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bag-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.bag-count {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.bag-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.bag-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #ceb67b;
+  background: #fffaf0;
+  border-radius: 10px;
+  padding: 6px;
+}
+
+.bag-item-img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: rgba(255, 242, 210, 0.95);
+  border: 1px solid #d8c89c;
+}
+
+.bag-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bag-qty {
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 242, 210, 0.95);
+  border: 1px solid #d8c89c;
+  min-width: 44px;
+  text-align: center;
 }
 
 .seed-preview {
@@ -671,6 +753,22 @@ button:active {
   gap: 8px;
 }
 
+.market-card .card-hero {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+}
+
+.market-item-img {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  border-radius: 14px;
+  background: rgba(255, 242, 210, 0.95);
+  border: 1px solid #d8c89c;
+}
+
 .market-card .card-row {
   display: flex;
   align-items: center;
@@ -682,6 +780,10 @@ button:active {
 .refresh-btn {
   align-self: center;
   margin-top: 8px;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 14px;
+  min-width: 220px;
 }
 
 .market-footer {
@@ -717,6 +819,11 @@ button:active {
 
 .pager-info {
   font-weight: 800;
+  color: #a33b18;
+  background: rgba(255, 236, 196, 0.95);
+  border: 2px solid #c99b42;
+  border-radius: 999px;
+  padding: 2px 10px;
 }
 
 .corner-btn {
@@ -781,6 +888,34 @@ button:active {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.confirm-body {
+  background: rgba(255, 251, 236, 0.9);
+  border: 2px solid var(--panel-bd);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.confirm-body p {
+  margin: 0;
+  font-weight: 800;
+  text-align: center;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+#unlockConfirm {
+  background: var(--btn-active);
+  color: #fff;
+  border-color: var(--btn-active-bd);
 }
 
 .list-item {

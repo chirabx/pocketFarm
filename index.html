@@ -1,11 +1,13 @@
 ﻿<!doctype html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
-  <title>口袋农场</title>
+  <title>蒙蒙的口袋农场</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
+
 <body>
   <div id="portraitTip" class="portrait-tip">
     <div class="tip-card">
@@ -35,6 +37,11 @@
           <span id="bagCount">0</span>/<span id="bagCap">150</span>
         </div>
       </div>
+      <button id="endMonth" class="end-month icon-btn" title="结束这个月">
+        <span class="icon" aria-hidden="true">⏭️</span>
+        <span class="btn-label" aria-hidden="true">结束本月</span>
+        <span class="sr-only">结束这个月</span>
+      </button>
     </header>
 
     <main class="board">
@@ -65,11 +72,6 @@
     </button>
 
     <div class="tool-stack">
-      <button class="tool icon-btn active" data-tool="harvest" title="收获">
-        <span class="icon" aria-hidden="true">⭐</span>
-        <span class="btn-label" aria-hidden="true">收获</span>
-        <span class="sr-only">收获</span>
-      </button>
       <button class="tool icon-btn" data-tool="plant" title="种植">
         <span class="icon" aria-hidden="true">🌱</span>
         <span class="btn-label" aria-hidden="true">种植</span>
@@ -95,6 +97,11 @@
         <span class="btn-label" aria-hidden="true">铲除</span>
         <span class="sr-only">铲除</span>
       </button>
+      <button class="tool icon-btn active" data-tool="harvest" title="收获">
+        <span class="icon" aria-hidden="true">⭐</span>
+        <span class="btn-label" aria-hidden="true">收获</span>
+        <span class="sr-only">收获</span>
+      </button>
     </div>
   </div>
 
@@ -106,7 +113,6 @@
         <span class="icon" aria-hidden="true">✖️</span>
       </button>
     </div>
-    <div class="seedbar" id="seedBar"></div>
     <div id="bagList" class="list"></div>
   </div>
 
@@ -119,16 +125,14 @@
       </button>
     </div>
     <div class="panel-actions">
-      <button id="endMonth" class="end-month icon-btn" title="结束这个月">
-        <span class="icon" aria-hidden="true">⏭️</span>
-        <span class="sr-only">结束这个月</span>
-      </button>
       <button id="saveNow" class="icon-btn" title="手动存档">
         <span class="icon" aria-hidden="true">💾</span>
+        <span class="btn-label" aria-hidden="true">手动存档</span>
         <span class="sr-only">手动存档</span>
       </button>
       <button id="resetGame" class="danger icon-btn" title="重置存档">
         <span class="icon" aria-hidden="true">🗑️</span>
+        <span class="btn-label" aria-hidden="true">重置存档</span>
         <span class="sr-only">重置存档</span>
       </button>
     </div>
@@ -211,7 +215,7 @@
       <div id="marketCards" class="market-grid"></div>
       <div class="market-footer">
         <div class="market-total">
-          <span class="label">购买物品金额</span>
+          <span class="label">售出物品金额</span>
           <strong id="marketTotalPrice">0</strong>
         </div>
         <div class="list-pager">
@@ -222,13 +226,44 @@
       </div>
       <button id="refreshMarket" class="icon-btn refresh-btn" title="刷新收购">
         <span class="icon" aria-hidden="true">🔄</span>
-        <span class="badge" aria-hidden="true">40</span>
-        <span class="sr-only">刷新收购 40金币</span>
+        <span class="btn-label" aria-hidden="true">刷新收购列表</span>
+        <span class="badge" aria-hidden="true">40金币</span>
+        <span class="small">重新生成本月收购作物</span>
+        <span class="sr-only">刷新收购列表 40金币</span>
       </button>
+    </div>
+  </div>
+
+  <div id="seedSelectPanel" class="overlay-panel">
+    <div class="panel-head">
+      <span class="panel-icon" aria-hidden="true">🌱</span>
+      <span class="sr-only">选择种子</span>
+      <button class="icon-btn close-btn" data-close="seedSelectPanel" title="关闭">
+        <span class="icon" aria-hidden="true">✖️</span>
+      </button>
+    </div>
+    <div id="seedSelectList" class="list"></div>
+  </div>
+
+  <div id="unlockConfirmPanel" class="overlay-panel">
+    <div class="panel-head">
+      <span class="panel-icon" aria-hidden="true">🧱</span>
+      <span class="sr-only">开垦确认</span>
+      <button class="icon-btn close-btn" data-close="unlockConfirmPanel" title="关闭">
+        <span class="icon" aria-hidden="true">✖️</span>
+      </button>
+    </div>
+    <div class="confirm-body">
+      <p id="unlockConfirmText">是否确认开垦这块地？</p>
+      <div class="confirm-actions">
+        <button id="unlockCancel" class="icon-btn">取消</button>
+        <button id="unlockConfirm" class="icon-btn">确认开垦</button>
+      </div>
     </div>
   </div>
 
   <div id="toast" class="toast"></div>
   <script src="./app.js"></script>
 </body>
+
 </html>

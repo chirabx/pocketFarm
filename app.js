@@ -4,9 +4,14 @@
   const SAVE_KEY = 'farm_game_save_v4';
   const MARKET_SIZE = 4;
   const MARKET_REFRESH_COST = 40;
-  const UNLOCK_COST = 120;
   const GRID_SIZE = 5;
   const PLOT_COUNT = GRID_SIZE * GRID_SIZE;
+  const TASK_ORDER = ['watered', 'weeded', 'fertilized'];
+  const TASK_LABELS = {
+    watered: '浇水',
+    weeded: '除虫',
+    fertilized: '施肥'
+  };
 
   const ASSET = {
     bg: './assets/bg/farm_scene_main.png',
@@ -16,6 +21,18 @@
     iconWater: './assets/fx/icon_water_can.png',
     iconBug: './assets/fx/icon_bug_purple.png',
     iconFertilize: './assets/fx/icon_fertilizer_bag.png',
+    warehouse: {
+      wheat: './assets/warehouse/wheat.png',
+      cabbage: './assets/warehouse/cabbage.png',
+      corn: './assets/warehouse/corn.png',
+      tomato: './assets/warehouse/tomato.png',
+      potato: './assets/warehouse/potato.png',
+      strawberry: './assets/warehouse/strawberry.png',
+      carrot: './assets/warehouse/carrot.png',
+      pumpkin: './assets/warehouse/pumpkin.png',
+      watermelon: './assets/warehouse/watermelon.png',
+      eggplant: './assets/warehouse/eggplant.png'
+    },
     stage: {
       1: './assets/crops/shared/stage_1.png',
       2: './assets/crops/shared/stage_2.png',
@@ -66,7 +83,7 @@
     goldValue: document.getElementById('goldValue'),
     bagCount: document.getElementById('bagCount'),
     bagCap: document.getElementById('bagCap'),
-    seedBar: document.getElementById('seedBar'),
+    seedSelectList: document.getElementById('seedSelectList'),
     farmGrid: document.getElementById('farmGrid'),
     hintText: document.getElementById('hintText'),
     shopSeedList: document.getElementById('shopSeedList'),
@@ -103,7 +120,12 @@
     marketPrev: document.getElementById('marketPrev'),
     marketNext: document.getElementById('marketNext'),
     marketPageInfo: document.getElementById('marketPageInfo'),
-    marketTotalPrice: document.getElementById('marketTotalPrice')
+    marketTotalPrice: document.getElementById('marketTotalPrice'),
+    seedSelectPanel: document.getElementById('seedSelectPanel'),
+    unlockConfirmPanel: document.getElementById('unlockConfirmPanel'),
+    unlockConfirmText: document.getElementById('unlockConfirmText'),
+    unlockCancel: document.getElementById('unlockCancel'),
+    unlockConfirm: document.getElementById('unlockConfirm')
   };
 
   const SEED_PAGE_SIZE = 3;
@@ -117,20 +139,21 @@
     buyQty: {},
     sellQty: {},
     shopSeedPage: 0,
-    marketPage: 0
+    marketPage: 0,
+    pendingUnlock: null
   };
 
   const KNOWLEDGE = {
-    wheat: '小麦磨成面粉后可以做面条、馒头，是很多家庭的主食来源。',
-    cabbage: '白菜清淡爽口，是家常炒菜和炖菜的常客。',
-    corn: '玉米可以煮着吃，也能做成玉米面和爆米花，是常见的粗粮。',
-    tomato: '番茄富含维生素C，可以生吃或做成番茄炒蛋。',
-    potato: '土豆含淀粉多，能做成土豆泥、薯条，是常见蔬菜。',
-    strawberry: '草莓酸甜可口，常用来做果酱和甜品。',
-    carrot: '胡萝卜含有胡萝卜素，对眼睛很有帮助。',
-    pumpkin: '南瓜可以煮汤或蒸着吃，也能做成南瓜饼。',
-    watermelon: '西瓜清甜多汁，夏日里最解渴的水果之一。',
-    eggplant: '茄子适合红烧或蒸制，口感柔软入味。'
+    wheat: '小麦是禾本科的重要谷物，富含淀粉与植物蛋白，是全球三大主粮之一。它起源于约一万年前中东的“新月沃地”，直接推动了人类从狩猎走向农业定居的文明演进。传入中国后，随着汉代石磨的普及，面粉加工技术成熟，促使面食逐渐兴起，深刻塑造了以面条、馒头为主的北方饮食文化。小麦不仅是饱腹的粮食，更是见证人类文明发展的金色史诗。',
+    cabbage: '大白菜属十字花科，原产于中国，富含维生素，是极耐寒的国民级蔬菜。它曾是北方冬季的绝对“当家菜”，承载着一代人深厚的冬储记忆。在传统文化中，“白菜”谐音“百财”，寓意招财进宝与清白传家，著名的国宝“翠玉白菜”便源于这种民间期许。它是兼具实用价值与美好祥瑞的田园珍品。',
+    corn: '玉米属禾本科，是全球总产量最高的“黄金谷物”。它原产于美洲，由印第安人历经数千年驯化，曾是支撑玛雅与阿兹特克文明繁荣的农业基石。16世纪大航海时代，玉米随哥伦布的船队走向世界，并在明朝时期传入中国。因其极其耐旱、不挑土地的顽强生命力，它在古代常被作为“救荒作物”，极大推动了全球人口的增长。玉米不仅是多功能的粮食与饲料，更象征着坚韧、开拓与丰收。',
+    tomato: '番茄属茄科，富含维生素C与番茄红素，是跨越蔬果界限的奇妙作物。它原产于南美洲，因色彩过于艳丽，最初传入欧洲时被误认为有毒的“狼桃”，仅供贵族庭院观赏。直到有勇者大胆品尝后，它才华丽转身，风靡全球餐桌，成为无数经典美食的灵魂。番茄不仅酸甜可口，更象征着打破偏见与探索未知的勇气。',
+    potato: '土豆属茄科块茎植物，富含淀粉，是全球第四大主粮。它原产于南美安第斯山脉，曾是印加文明的瑰宝。大航海时代传遍全球后，因其极其耐贫瘠与高产量，迅速成为改变世界人口格局的“救命粮”。它深埋地下、不事张扬，既是餐桌上的百变星君，更象征着踏实与奉献。',
+    strawberry: '草莓属蔷薇科，是富含维生素C的聚合果，因其鲜红多汁、酸甜诱人而广受喜爱。现代大果草莓并非古老物种，而是18世纪在法国由北美弗吉尼亚草莓与南美智利草莓偶然杂交诞生的“混血儿”。在西方文化中，它常被视作爱与纯洁的象征，更是初夏田园里最精致、最浪漫的浆果馈赠。',
+    carrot: '胡萝卜属伞形科，其肉质根富含胡萝卜素，是护眼明目的健康佳品。它原产于亚洲西南部，最初多为紫色或白色。直到17世纪，荷兰园艺家为了向“奥兰治家族”（Orange，意为橙色）致敬，精心培育出了亮橙色的变种，并迅速风靡全球。从异域野草到餐桌常客，胡萝卜是人类农业育种史上的经典杰作。',
+    pumpkin: '南瓜属葫芦科，耐旱好养且极易储存，是度过荒年与寒冬的“宝藏作物”。它原产于中南美洲，大航海时代后传遍世界。在西方文化中，南瓜不仅是感恩节餐桌上的丰收象征，更在万圣节化身为驱散邪恶的“杰克灯”。它那金黄耀眼的巨大果实，蕴含着脚踏实地的田园智慧与祈求平安的民俗温情。',
+    watermelon: '西瓜属葫芦科，以其清甜多汁的红色果肉成为当之无愧的“盛夏之王”。它原产于干旱的非洲沙漠，早在古埃及时代便被法老种植。后经由丝绸之路传入中国，因来自西域而得名“西瓜”。从古代文人笔下的“碧蔓凌霜，绿裹红瓤”，到现代人空调房里的消暑标配，西瓜承载了跨越千年的清凉记忆。',
+    eggplant: '茄子属茄科，是为数不多呈现鲜艳紫色的蔬菜，肉质软糯，极易吸收汤汁的鲜美。它原产于古印度，在晋代前传入中国。古代称其为“落苏”，因其味美且易于烹饪，迅速成为寻常百姓家与宫廷御宴的常客。茄子圆润或修长的形态，在传统民俗中常带有长寿、安康的吉祥寓意，是充满东方烟火气的独特食材。'
   };
 
   if (!Array.isArray(state.marketOffers) || state.marketOffers.length !== MARKET_SIZE) {
@@ -156,7 +179,7 @@
       bagCap: 150,
       selectedTool: 'harvest',
       selectedSeed: 'wheat',
-      plots: Array.from({ length: PLOT_COUNT }, (_, idx) => createEmptyPlot(idx >= 16)),
+      plots: Array.from({ length: PLOT_COUNT }, (_, idx) => createEmptyPlot(isDefaultLocked(idx))),
       inventory: { seeds, produce },
       marketOffers: createMarketOffers()
     };
@@ -175,10 +198,19 @@
 
   function createTasks() {
     return {
-      watered: false,
-      fertilized: false,
-      weeded: false
+      queue: [],
+      done: []
     };
+  }
+
+  function assignMonthlyTasks(plot) {
+    plot.tasks.queue = [];
+    plot.tasks.done = [];
+    if (Math.random() > 0.3) {
+      return;
+    }
+    const task = TASK_ORDER[Math.floor(Math.random() * TASK_ORDER.length)];
+    plot.tasks.queue = [task];
   }
 
   function bindEvents() {
@@ -192,16 +224,20 @@
       state.selectedTool = button.dataset.tool;
       renderToolbar();
       renderHint();
+      if (state.selectedTool === 'plant') {
+        openSeedSelect();
+      }
     });
 
-    dom.seedBar.addEventListener('click', (event) => {
+    dom.seedSelectList.addEventListener('click', (event) => {
       const button = event.target.closest('button[data-seed]');
       if (!button) {
         return;
       }
       state.selectedSeed = button.dataset.seed;
-      renderSeedBar();
+      renderSeedSelector();
       renderHint();
+      closePanel(dom.seedSelectPanel);
     });
 
     dom.farmGrid.addEventListener('click', (event) => {
@@ -272,6 +308,17 @@
       }
     });
 
+    dom.unlockCancel.addEventListener('click', () => closePanel(dom.unlockConfirmPanel));
+    dom.unlockConfirm.addEventListener('click', () => {
+      if (ui.pendingUnlock === null) {
+        closePanel(dom.unlockConfirmPanel);
+        return;
+      }
+      unlockPlot(ui.pendingUnlock);
+      closePanel(dom.unlockConfirmPanel);
+      ui.pendingUnlock = null;
+    });
+
     dom.buySeedConfirm.addEventListener('click', () => {
       const cropId = ui.selectedShopCrop;
       buySeed(cropId, getBuyQty(cropId));
@@ -327,6 +374,34 @@
     });
   }
 
+  function openSeedSelect() {
+    renderSeedSelector();
+    dom.seedSelectPanel.classList.add('show');
+    [dom.shopPanel, dom.bagPanel, dom.settingsPanel, dom.unlockConfirmPanel].forEach((item) => {
+      if (item && item !== dom.seedSelectPanel) {
+        item.classList.remove('show');
+      }
+    });
+  }
+
+  function closePanel(panel) {
+    if (panel) {
+      panel.classList.remove('show');
+    }
+  }
+
+  function getUnlockCost(index) {
+    const col = index % GRID_SIZE;
+    const step = col;
+    const costs = [0, 50, 100, 200, 400];
+    return costs[Math.min(step, costs.length - 1)];
+  }
+
+  function isDefaultLocked(index) {
+    const col = index % GRID_SIZE;
+    return col !== 0;
+  }
+
   function handlePlotAction(index) {
     const plot = state.plots[index];
     if (!plot) {
@@ -334,7 +409,10 @@
     }
 
     if (plot.locked) {
-      unlockPlot(plot);
+      const cost = getUnlockCost(index);
+      dom.unlockConfirmText.textContent = `是否确认开垦这块地？需要 ${cost} 金币`;
+      ui.pendingUnlock = index;
+      dom.unlockConfirmPanel.classList.add('show');
       return;
     }
 
@@ -373,15 +451,20 @@
     }
   }
 
-  function unlockPlot(plot) {
-    if (state.gold < UNLOCK_COST) {
-      showToast(`金币不足，开垦需要${UNLOCK_COST}`);
+  function unlockPlot(index) {
+    const plot = state.plots[index];
+    if (!plot || !plot.locked) {
       return;
     }
-    state.gold -= UNLOCK_COST;
+    const cost = getUnlockCost(index);
+    if (state.gold < cost) {
+      showToast(`金币不足，开垦需要${cost}`);
+      return;
+    }
+    state.gold -= cost;
     plot.locked = false;
     renderAll();
-    showToast(`已开垦新地块，花费${UNLOCK_COST}金币`);
+    showToast(`已开垦新地块，花费${cost}金币`);
   }
 
   function plantOnPlot(plot) {
@@ -403,6 +486,7 @@
     plot.requiredMonths = crop.growMonths;
     plot.ready = false;
     plot.tasks = createTasks();
+    assignMonthlyTasks(plot);
     renderAll();
     showToast(`已种下${crop.name}`);
   }
@@ -413,12 +497,18 @@
       return;
     }
 
-    if (plot.tasks[taskKey]) {
-      showToast('本月该操作已完成');
+    const current = plot.tasks.queue[0];
+    if (!current) {
+      showToast('本月无需进行该操作');
+      return;
+    }
+    if (current !== taskKey) {
+      showToast(`请先完成${TASK_LABELS[current]}`);
       return;
     }
 
-    plot.tasks[taskKey] = true;
+    plot.tasks.queue.shift();
+    plot.tasks.done.push(taskKey);
     renderFarm();
     showToast(message);
   }
@@ -469,7 +559,7 @@
         return;
       }
 
-      const finished = plot.tasks.watered && plot.tasks.fertilized && plot.tasks.weeded;
+      const finished = plot.tasks.queue.length === 0;
       if (finished) {
         plot.progressMonths += 1;
         grownCount += 1;
@@ -482,6 +572,9 @@
       }
 
       plot.tasks = createTasks();
+      if (!plot.ready) {
+        assignMonthlyTasks(plot);
+      }
     });
 
     state.month += 1;
@@ -723,13 +816,12 @@
       return chunks.join('');
     }
 
-    if (!plot.tasks.watered) {
+    const current = plot.tasks.queue[0];
+    if (current === 'watered') {
       chunks.push(`<img class="status-icon" src="${ASSET.iconWater}" alt="需浇水" />`);
-    }
-    if (!plot.tasks.weeded) {
+    } else if (current === 'weeded') {
       chunks.push(`<img class="status-icon" src="${ASSET.iconBug}" alt="需除虫" />`);
-    }
-    if (!plot.tasks.fertilized) {
+    } else if (current === 'fertilized') {
       chunks.push(`<img class="status-icon" src="${ASSET.iconFertilize}" alt="需施肥" />`);
     }
 
@@ -739,7 +831,7 @@
   function renderAll() {
     renderTopStats();
     renderToolbar();
-    renderSeedBar();
+    renderSeedSelector();
     renderFarm();
     renderShop();
     renderMarket();
@@ -761,16 +853,18 @@
     });
   }
 
-  function renderSeedBar() {
-    dom.seedBar.innerHTML = CROPS.map((crop) => {
+  function renderSeedSelector() {
+    dom.seedSelectList.innerHTML = CROPS.map((crop) => {
       const count = state.inventory.seeds[crop.id] || 0;
       const active = state.selectedSeed === crop.id ? 'active' : '';
-      const icon = ICONS.crops[crop.id] || '🌱';
       return `
-        <button class="seed-btn icon-btn ${active}" data-seed="${crop.id}" title="${crop.name}">
-          <span class="icon" aria-hidden="true">${icon}</span>
-          <span class="badge" aria-hidden="true">${count}</span>
-          <span class="sr-only">${crop.name} ${count}</span>
+        <button class="seed-select ${active}" data-seed="${crop.id}" title="${crop.name}">
+          <img class="shop-item-img" src="${ASSET.warehouse[crop.id] || ASSET.stage[4]}" alt="${crop.name}" />
+          <div>
+            <strong>${crop.name}</strong>
+            <div class="small">库存 ${count}</div>
+          </div>
+          <div class="badge">x${count}</div>
         </button>
       `;
     }).join('');
@@ -783,12 +877,13 @@
       const style = `style="--x:${layout.x}px;--y:${layout.y}px;--w:${layout.w}px;--h:${layout.h}px;z-index:${layout.z}"`;
 
       if (plot.locked) {
+        const cost = getUnlockCost(idx);
         return `
-          <div class="plot locked" data-idx="${idx}" ${style} title="开垦 ${UNLOCK_COST} 金币">
+          <div class="plot locked" data-idx="${idx}" ${style} title="开垦 ${cost} 金币">
             <img class="tile" src="${ASSET.tileLocked}" alt="未开垦" />
             <span class="lock-tag" aria-hidden="true">
               <span class="icon">🪙</span>
-              <span class="num">${UNLOCK_COST}</span>
+              <span class="num">${cost}</span>
             </span>
           </div>
         `;
@@ -825,17 +920,13 @@
       return;
     }
 
-    const selectedIndex = Math.max(0, CROPS.findIndex((item) => item.id === crop.id));
-    const targetPage = Math.floor(selectedIndex / SEED_PAGE_SIZE);
-    ui.shopSeedPage = Math.min(getMaxPage(CROPS.length, SEED_PAGE_SIZE), targetPage);
-
     dom.seedDetailName.textContent = crop.name;
     dom.seedDetailPrice.textContent = String(crop.seedBuy);
     dom.seedDetailOwned.textContent = String(state.inventory.seeds[crop.id] || 0);
     const buyQty = getBuyQty(crop.id);
     dom.seedDetailQty.textContent = String(buyQty);
     dom.seedDetailTotal.textContent = String(buyQty * crop.seedBuy);
-    dom.seedPreviewImg.src = ASSET.stage[4];
+    dom.seedPreviewImg.src = ASSET.warehouse[crop.id] || ASSET.stage[4];
     dom.seedKnowledge.textContent = KNOWLEDGE[crop.id] || '这是常见作物，可以用心照料收获好收益。';
 
     const start = ui.shopSeedPage * SEED_PAGE_SIZE;
@@ -849,6 +940,7 @@
       const active = item.id === crop.id ? 'active' : '';
       return `
         <div class="seed-select ${active}" data-seed="${item.id}">
+          <img class="shop-item-img" src="${ASSET.warehouse[item.id] || ASSET.stage[4]}" alt="${item.name}" />
           <div>
             <strong>${item.name}</strong>
             <div class="small">种子 ${item.seedBuy} 金币</div>
@@ -874,7 +966,10 @@
       const qty = getSellQty(offer.id);
       return `
         <div class="market-card">
-          <div class="card-row"><span>名称</span><strong>${crop.name}</strong></div>
+          <div class="card-hero">
+            <img class="market-item-img" src="${ASSET.warehouse[offer.id] || ASSET.stage[4]}" alt="${crop.name}" />
+            <strong>${crop.name}</strong>
+          </div>
           <div class="card-row"><span>价格</span><strong>${offer.price}</strong></div>
           <div class="card-row">
             <span>售出数量</span>
@@ -898,28 +993,62 @@
       `;
     }).join('');
 
-    const total = state.marketOffers.reduce((sum, offer) => {
+    const total = pageOffers.reduce((sum, offer) => {
       return sum + getSellQty(offer.id) * offer.price;
     }, 0);
     dom.marketTotalPrice.textContent = String(total);
   }
 
   function renderBag() {
-    const seedRows = CROPS.map((crop) => {
+    let seedTotal = 0;
+    let produceTotal = 0;
+    const seedCards = CROPS.map((crop) => {
       const qty = state.inventory.seeds[crop.id] || 0;
-      return `<div class="list-item"><div class="meta compact" title="种子 ${crop.name}"><div class="crop-icon" aria-hidden="true">${ICONS.crops[crop.id] || '🌱'}</div><div class="meta-badges" aria-hidden="true"><span class="badge">🌰${qty}</span></div><span class="sr-only">种子 ${crop.name} 数量 ${qty}</span></div><div></div></div>`;
+      seedTotal += qty;
+      return `
+        <div class="bag-card" title="种子 ${crop.name}">
+          <img class="bag-item-img" src="${ASSET.warehouse[crop.id] || ASSET.stage[4]}" alt="${crop.name}" />
+          <div class="bag-meta">
+            <strong>${crop.name}</strong>
+            <div class="small">种子</div>
+          </div>
+          <div class="bag-qty">x${qty}</div>
+        </div>
+      `;
     });
 
-    const produceRows = CROPS.map((crop) => {
+    const produceCards = CROPS.map((crop) => {
       const qty = state.inventory.produce[crop.id] || 0;
-      return `<div class="list-item"><div class="meta compact" title="作物 ${crop.name}"><div class="crop-icon" aria-hidden="true">${ICONS.crops[crop.id] || '🌱'}</div><div class="meta-badges" aria-hidden="true"><span class="badge">📦${qty}</span></div><span class="sr-only">作物 ${crop.name} 数量 ${qty}</span></div><div></div></div>`;
+      produceTotal += qty;
+      return `
+        <div class="bag-card" title="作物 ${crop.name}">
+          <img class="bag-item-img" src="${ASSET.warehouse[crop.id] || ASSET.stage[4]}" alt="${crop.name}" />
+          <div class="bag-meta">
+            <strong>${crop.name}</strong>
+            <div class="small">作物</div>
+          </div>
+          <div class="bag-qty">x${qty}</div>
+        </div>
+      `;
     });
 
     dom.bagList.innerHTML = `
-      <div class="bag-section">种子</div>
-      ${seedRows.join('')}
-      <div class="bag-section">作物</div>
-      ${produceRows.join('')}
+      <div class="bag-wrap">
+        <div class="bag-section-head">
+          <span>种子</span>
+          <span class="bag-count">共 ${seedTotal}</span>
+        </div>
+        <div class="bag-grid">
+          ${seedCards.join('')}
+        </div>
+        <div class="bag-section-head">
+          <span>作物</span>
+          <span class="bag-count">共 ${produceTotal}</span>
+        </div>
+        <div class="bag-grid">
+          ${produceCards.join('')}
+        </div>
+      </div>
     `;
   }
 
@@ -944,7 +1073,11 @@
   }
 
   function getSellQty(cropId) {
-    return Math.max(1, ui.sellQty[cropId] || 1);
+    const have = state.inventory.produce[cropId] || 0;
+    if (have <= 0) {
+      return 0;
+    }
+    return Math.min(have, Math.max(1, ui.sellQty[cropId] || 1));
   }
 
   function adjustQuantity(mode, step, cropId) {
@@ -963,8 +1096,8 @@
 
     if (mode === 'sell' && cropId) {
       const have = state.inventory.produce[cropId] || 0;
-      const max = Math.max(1, have);
-      const next = Math.min(max, Math.max(1, getSellQty(cropId) + step));
+      const max = Math.max(0, have);
+      const next = Math.min(max, Math.max(0, getSellQty(cropId) + step));
       ui.sellQty[cropId] = next;
       renderMarket();
     }
@@ -1009,21 +1142,23 @@
       });
 
       while (parsed.plots.length < PLOT_COUNT) {
-        parsed.plots.push(createEmptyPlot(parsed.plots.length >= 16));
+        parsed.plots.push(createEmptyPlot(isDefaultLocked(parsed.plots.length)));
       }
 
       parsed.plots = parsed.plots.slice(0, PLOT_COUNT).map((plot, idx) => ({
-        locked: typeof plot.locked === 'boolean' ? plot.locked : idx >= 16,
+        locked: typeof plot.locked === 'boolean' ? plot.locked : isDefaultLocked(idx),
         cropId: plot.cropId || null,
         progressMonths: Number(plot.progressMonths) || 0,
         requiredMonths: Number(plot.requiredMonths) || 0,
         ready: Boolean(plot.ready),
-        tasks: {
-          watered: Boolean(plot.tasks && plot.tasks.watered),
-          fertilized: Boolean(plot.tasks && plot.tasks.fertilized),
-          weeded: Boolean(plot.tasks && plot.tasks.weeded)
-        }
+        tasks: normalizeTasks(plot.tasks)
       }));
+
+      parsed.plots.forEach((plot) => {
+        if (plot.cropId && !plot.ready && plot.tasks.queue.length === 0) {
+          assignMonthlyTasks(plot);
+        }
+      });
 
       if (!CROP_BY_ID[parsed.selectedSeed]) {
         parsed.selectedSeed = CROPS[0].id;
@@ -1054,5 +1189,23 @@
     toastTimer = setTimeout(() => {
       dom.toast.classList.remove('show');
     }, 1800);
+  }
+
+  function normalizeTasks(tasks) {
+    if (tasks && Array.isArray(tasks.queue)) {
+      return {
+        queue: [...tasks.queue],
+        done: Array.isArray(tasks.done) ? [...tasks.done] : []
+      };
+    }
+
+    const legacy = {
+      watered: Boolean(tasks && tasks.watered),
+      weeded: Boolean(tasks && tasks.weeded),
+      fertilized: Boolean(tasks && tasks.fertilized)
+    };
+    const queue = TASK_ORDER.filter((key) => !legacy[key]);
+    const done = TASK_ORDER.filter((key) => legacy[key]);
+    return { queue, done };
   }
 })();
