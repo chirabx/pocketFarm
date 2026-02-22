@@ -1,0 +1,234 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <title>口袋农场</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div id="portraitTip" class="portrait-tip">
+    <div class="tip-card">
+      <h2>请横屏游玩</h2>
+      <p>这是横屏设计的农场游戏，旋转手机后可获得最佳体验。</p>
+      <button id="lockLandscape">尝试锁定横屏</button>
+    </div>
+  </div>
+
+  <div class="app" id="appRoot">
+    <header class="topbar">
+      <div class="title-group">
+        <div class="brand-icon" aria-hidden="true">🌾</div>
+        <h1 class="sr-only">口袋农场</h1>
+      </div>
+      <div class="stats">
+        <div class="stat" title="月份">
+          <span class="stat-icon" aria-hidden="true">📅</span>
+          <span id="monthValue">1</span>
+        </div>
+        <div class="stat" title="金币">
+          <span class="stat-icon" aria-hidden="true">🪙</span>
+          <span id="goldValue">0</span>
+        </div>
+        <div class="stat" title="仓库容量">
+          <span class="stat-icon" aria-hidden="true">🎒</span>
+          <span id="bagCount">0</span>/<span id="bagCap">150</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="board">
+      <section class="left-pane">
+        <div class="farm-wrap">
+          <div class="farm" id="farmGrid"></div>
+        </div>
+        <div class="hint" id="hintText"></div>
+      </section>
+    </main>
+
+    <button id="shopToggle" class="corner-btn left-mid" title="商店">
+      <span class="icon" aria-hidden="true">🛒</span>
+      <span class="btn-label" aria-hidden="true">商店</span>
+      <span class="sr-only">商店</span>
+    </button>
+
+    <button id="bagToggle" class="corner-btn left-bottom" title="仓库">
+      <span class="icon" aria-hidden="true">📦</span>
+      <span class="btn-label" aria-hidden="true">仓库</span>
+      <span class="sr-only">仓库</span>
+    </button>
+
+    <button id="settingsToggle" class="corner-btn right-top" title="设置">
+      <span class="icon" aria-hidden="true">⚙️</span>
+      <span class="btn-label" aria-hidden="true">设置</span>
+      <span class="sr-only">设置</span>
+    </button>
+
+    <div class="tool-stack">
+      <button class="tool icon-btn active" data-tool="harvest" title="收获">
+        <span class="icon" aria-hidden="true">⭐</span>
+        <span class="btn-label" aria-hidden="true">收获</span>
+        <span class="sr-only">收获</span>
+      </button>
+      <button class="tool icon-btn" data-tool="plant" title="种植">
+        <span class="icon" aria-hidden="true">🌱</span>
+        <span class="btn-label" aria-hidden="true">种植</span>
+        <span class="sr-only">种植</span>
+      </button>
+      <button class="tool icon-btn" data-tool="water" title="浇水">
+        <span class="icon" aria-hidden="true">💧</span>
+        <span class="btn-label" aria-hidden="true">浇水</span>
+        <span class="sr-only">浇水</span>
+      </button>
+      <button class="tool icon-btn" data-tool="fertilize" title="施肥">
+        <img class="icon-img" src="./assets/fx/icon_fertilizer.png" alt="施肥" />
+        <span class="btn-label" aria-hidden="true">施肥</span>
+        <span class="sr-only">施肥</span>
+      </button>
+      <button class="tool icon-btn" data-tool="weed" title="除虫">
+        <span class="icon" aria-hidden="true">🐛</span>
+        <span class="btn-label" aria-hidden="true">除虫</span>
+        <span class="sr-only">除虫</span>
+      </button>
+      <button class="tool icon-btn" data-tool="clear" title="铲除">
+        <span class="icon" aria-hidden="true">🧹</span>
+        <span class="btn-label" aria-hidden="true">铲除</span>
+        <span class="sr-only">铲除</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="bagPanel" class="overlay-panel">
+    <div class="panel-head">
+      <span class="panel-icon" aria-hidden="true">📦</span>
+      <span class="sr-only">仓库</span>
+      <button class="icon-btn close-btn" data-close="bagPanel" title="关闭">
+        <span class="icon" aria-hidden="true">✖️</span>
+      </button>
+    </div>
+    <div class="seedbar" id="seedBar"></div>
+    <div id="bagList" class="list"></div>
+  </div>
+
+  <div id="settingsPanel" class="overlay-panel">
+    <div class="panel-head">
+      <span class="panel-icon" aria-hidden="true">⚙️</span>
+      <span class="sr-only">设置</span>
+      <button class="icon-btn close-btn" data-close="settingsPanel" title="关闭">
+        <span class="icon" aria-hidden="true">✖️</span>
+      </button>
+    </div>
+    <div class="panel-actions">
+      <button id="endMonth" class="end-month icon-btn" title="结束这个月">
+        <span class="icon" aria-hidden="true">⏭️</span>
+        <span class="sr-only">结束这个月</span>
+      </button>
+      <button id="saveNow" class="icon-btn" title="手动存档">
+        <span class="icon" aria-hidden="true">💾</span>
+        <span class="sr-only">手动存档</span>
+      </button>
+      <button id="resetGame" class="danger icon-btn" title="重置存档">
+        <span class="icon" aria-hidden="true">🗑️</span>
+        <span class="sr-only">重置存档</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="shopPanel" class="overlay-panel wide">
+    <div class="panel-head">
+      <span class="panel-icon" aria-hidden="true">🛒</span>
+      <span class="sr-only">商店</span>
+      <button class="icon-btn close-btn" data-close="shopPanel" title="关闭">
+        <span class="icon" aria-hidden="true">✖️</span>
+      </button>
+    </div>
+    <div class="shop-tabs">
+      <button id="shopTabBuy" class="tab-btn active" data-tab="buy">购买种子</button>
+      <button id="shopTabSell" class="tab-btn" data-tab="sell">售出作物</button>
+    </div>
+
+    <div id="shopBuyView" class="shop-view show">
+      <div class="shop-split">
+        <div class="shop-left">
+          <div class="seed-detail">
+            <div class="seed-detail-row">
+              <span class="label">名称</span>
+              <span id="seedDetailName" class="value">小麦</span>
+            </div>
+            <div class="seed-detail-row">
+              <span class="label">价格</span>
+              <span id="seedDetailPrice" class="value">18</span>
+            </div>
+            <div class="seed-detail-row">
+              <span class="label">已拥有</span>
+              <span id="seedDetailOwned" class="value">0</span>
+            </div>
+            <div class="seed-detail-row">
+              <span class="label">购买数量</span>
+              <div class="qty-control">
+                <button class="icon-btn qty-btn" data-qty="buy" data-step="-1" title="减少">
+                  <span class="icon" aria-hidden="true">➖</span>
+                </button>
+                <span id="seedDetailQty" class="qty-value">1</span>
+                <button class="icon-btn qty-btn" data-qty="buy" data-step="1" title="增加">
+                  <span class="icon" aria-hidden="true">➕</span>
+                </button>
+              </div>
+            </div>
+            <div class="seed-detail-row">
+              <span class="label">购买物品金额</span>
+              <span id="seedDetailTotal" class="value">0</span>
+            </div>
+            <button id="buySeedConfirm" class="icon-btn buy-btn" title="购买种子">
+              <span class="icon" aria-hidden="true">🪙</span>
+              <span class="btn-label" aria-hidden="true">购买</span>
+              <span class="sr-only">购买</span>
+            </button>
+          </div>
+
+          <div class="seed-list">
+            <div id="shopSeedList" class="list"></div>
+            <div class="list-pager">
+              <button id="shopSeedPrev" class="icon-btn" title="上一页">上一页</button>
+              <span id="shopSeedPageInfo" class="pager-info">1/1</span>
+              <button id="shopSeedNext" class="icon-btn" title="下一页">下一页</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="shop-right">
+          <div class="seed-preview">
+            <img id="seedPreviewImg" src="./assets/crops/shared/stage_4.png" alt="作物预览" />
+          </div>
+          <div id="seedKnowledge" class="seed-knowledge">
+            小麦是我国常见粮食之一，磨成面粉后可以做成面条、馒头等食物。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="shopSellView" class="shop-view">
+      <div id="marketCards" class="market-grid"></div>
+      <div class="market-footer">
+        <div class="market-total">
+          <span class="label">购买物品金额</span>
+          <strong id="marketTotalPrice">0</strong>
+        </div>
+        <div class="list-pager">
+          <button id="marketPrev" class="icon-btn" title="上一页">上一页</button>
+          <span id="marketPageInfo" class="pager-info">1/1</span>
+          <button id="marketNext" class="icon-btn" title="下一页">下一页</button>
+        </div>
+      </div>
+      <button id="refreshMarket" class="icon-btn refresh-btn" title="刷新收购">
+        <span class="icon" aria-hidden="true">🔄</span>
+        <span class="badge" aria-hidden="true">40</span>
+        <span class="sr-only">刷新收购 40金币</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
